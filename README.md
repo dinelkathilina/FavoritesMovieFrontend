@@ -1,33 +1,44 @@
-Favorites Movie Frontend
+# Favorites Movie Frontend
+
 A simple frontend application for managing favorite movies, built with React, Tailwind CSS, and Vite.
 
-Getting Started
-Clone the Repository
-Clone the repository using the following command:
+## Getting Started
 
-gh repo clone dinelkathilina/FavoritesMovieFrontend
+### Prerequisites
+- [Node.js](https://nodejs.org/) (version 14.0.0 or higher)
+- [npm](https://www.npmjs.com/)
 
-Install Dependencies
-Install the dependencies using the following command:
+### Installation
 
-npm install
+1. **Clone the Repository:**
+    ```bash
+    gh repo clone dinelkathilina/FavoritesMovieFrontend
+    ```
 
-Update API URLs
-Open the API folder and update the API_URL variable in the following files:
+2. **Install Dependencies:**
+    ```bash
+    npm install
+    ```
 
-authService.js
-tmdbService.js
-Replace the existing URL with the URL of your backend URL.
-Ex: https://localhost:7129
+3. **Update API URLs:**
+    - Open the `API` folder and update the `API_URL` variable in the following files:
+      - `authService.js`
+      - `tmdbService.js`
+    - Replace the existing URL with the URL of your backend API.
+      ```javascript
+      const API_URL = 'https://localhost:7129';
+      ```
 
-Run the Application
-Run the application using the following command:
+4. **Run the Application:**
+    ```bash
+    npm run dev
+    ```
+    - The application will be available at [http://localhost:3000](http://localhost:3000).
 
-npm run dev
+## Note
 
-The application will be available at http://localhost:3000.
+Make sure to update the `API_URL` variable in the `authService.js` and `tmdbService.js` files with the correct URL of your backend API before running the application.
 
-Note
-Make sure to update the API_URL variable in the authService.js and tmdbService.js files with the correct URL of your backend API before running the application.
+## Contributing
 
-If you encounter any issues, please open an issue on the GitHub repository.
+If you encounter any issues, please [open an issue](https://github.com/dinelkathilina/FavoritesMovieFrontend/issues) on the GitHub repository.
