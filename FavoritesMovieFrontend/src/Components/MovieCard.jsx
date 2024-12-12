@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Modal from "./Modal";
+import tmdbservice from "../../API/tmdbservice";
 
 export const MovieCard = ({ movieid, title, year, poster }) => {
   const [rating, setRating] = useState("Loading...");
@@ -20,26 +21,15 @@ export const MovieCard = ({ movieid, title, year, poster }) => {
 
       try {
         // Fetch movie rating
-        const ratingResponse = await axios.get(
-          `https://localhost:7219/movie/rating`,
-          {
-            params: { movieId: movieid },
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setRating(ratingResponse.data.vote_average || "N/A");
+        const movieRating = await tmdbservice.fetchMovieRating(movieid, token);
+        setRating(movieRating);
 
-        // Check if the movie is already in favorites
-        const favoritesResponse = await axios.get(
-          `https://localhost:7219/favorites/isFavorite`,
-          {
-            params: { movieId: movieid },
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setIsFavorite(favoritesResponse.data.isFavorite);
+        // Check if the movie is in favorites
+        const favoriteStatus = await tmdbservice.isMovieFavorite(movieid, token);
+        setIsFavorite(favoriteStatus);
       } catch (error) {
-        console.error("Failed to fetch details", error.message || error);
+        console.error("Failed to fetch movie details", error.message || error);
+        setRating("Error fetching details");
       }
     };
 
@@ -54,22 +44,13 @@ export const MovieCard = ({ movieid, title, year, poster }) => {
     }
 
     try {
-      // Fetch movie details
-      const detailsResponse = await axios.get(
-        `https://localhost:7219/movie/details/${movieid}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setMovieDetails(detailsResponse.data);
+      // Fetch movie details using tmdbservice
+      const detailsResponse = await tmdbservice.getMovieDetails(movieid, token);
+      setMovieDetails(detailsResponse);
 
-      // Fetch cast details
-      const castResponse = await axios.get(
-        `https://localhost:7219/movie/cast`,
-        {
-          params: { movieId: movieid },
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setCast(castResponse.data);
+      // Fetch cast details using tmdbservice
+      const castResponse = await tmdbservice.getMovieCast(movieid, token);
+      setCast(castResponse);
 
       setIsModalOpen(true); // Open the modal after fetching details
     } catch (error) {
@@ -82,12 +63,8 @@ export const MovieCard = ({ movieid, title, year, poster }) => {
     if (!token) return;
 
     try {
-      const response = await axios.post(
-        `https://localhost:7219/favorites/add?movieId=${movieid}`,
-        {}, // Empty body
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.status === 200) {
+      const success = await tmdbservice.addFavorite(movieid, token);
+      if (success) {
         setIsFavorite(true);
       }
     } catch (error) {

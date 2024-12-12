@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { MovieCard } from "./MovieCard";
+import tmdbservice from "../../API/tmdbservice";
 
 export const SearchInput = () => {
   const [query, setQuery] = useState("");
@@ -12,11 +12,8 @@ export const SearchInput = () => {
     setError("");
     try {
       const token = localStorage.getItem("token"); // Retrieve token for authentication
-      const response = await axios.get(`https://localhost:7219/movies/search`, {
-        params: { query },
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMovies(response.data); // Set movies from API response
+      const data = await tmdbservice.searchMovies(query, token);  // Use tmdbservice to search
+      setMovies(data);  // Set movies from API response
     } catch (err) {
       if (err.response) {
         setError(err.response.data || "Error occurred during search.");

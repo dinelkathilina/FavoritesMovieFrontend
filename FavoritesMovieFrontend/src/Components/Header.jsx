@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import tmdbservice from "../../API/tmdbservice";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -38,21 +38,14 @@ export const Header = () => {
   const fetchFavorites = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
-
+  
     try {
-      const response = await axios.get("https://localhost:7219/favorites", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const titles = response.data.map((movie) => ({
-        id: movie.movieId,
-        title: movie.title,
-      }));
-      setFavoriteMovies(titles);
+      const favorites = await tmdbservice.getFavorites(token);
+      setFavoriteMovies(favorites.map((movie) => ({ id: movie.movieId, title: movie.title })));
     } catch (error) {
       setError(error.message);
     }
   };
-
   useEffect(() => {
     fetchFavorites();
   }, []);
@@ -70,12 +63,10 @@ export const Header = () => {
     if (!token) return;
   
     try {
-      const url = `https://localhost:7219/favorites/remove?movieid=${movieid}`;
-      const headers = { Authorization: `Bearer ${token}` };
+     
+      const success = await tmdbservice.removeFavorite(movieid, token);
   
-      const response = await axios.delete(url, { headers });
-  
-      if (response.status === 200) {
+      if (success) {
         console.log("Movie removed from favorites.");
         alert("Movie removed from favorites successfully.");
   
@@ -89,7 +80,7 @@ export const Header = () => {
           fetchFavorites(); // Explicit fetch for empty state after last item
         }
       } else {
-        console.error(`Error: ${response.statusText}`);
+        console.error("Failed to remove movie from favorites.");
         alert("Failed to remove movie from favorites.");
       }
     } catch (error) {
@@ -97,6 +88,7 @@ export const Header = () => {
       alert("An error occurred while removing the movie from favorites.");
     }
   };
+  
   
   
 
@@ -168,12 +160,7 @@ export const Header = () => {
               Favorite Movies
             </h2>
 
-            {/* Movie List */}
-            {/* {error && (
-              <p className="text-red-500 text-sm mb-4">
-                Failed to fetch favorites: {error}
-              </p>
-            )} */}
+            
             <ul className="space-y-2">
               {favoriteMovies.map((movie) => (
                 <li
